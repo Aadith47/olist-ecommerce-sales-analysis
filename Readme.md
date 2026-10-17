@@ -21,6 +21,7 @@ I used SQL on about 99K orders from a Brazilian online marketplace. Late deliver
 3. **Late orders are often very late.** Of the 6,381 late orders that have a review, 2,781 (44%) arrived more than 7 days late.
 4. **Money at risk.** 3,979 late orders got a 1 or 2 star review. Their value (price plus freight) is about R$ 720K, which is 4.7% of the R$ 15.4M of delivered sales.
 5. **Late delivery is not the only cause.** About 11K reviews gave 1 star, but only 6,534 orders were late. Lateness explains part of the bad reviews, not all of them.
+6. **Late rates vary a lot by state, from 2.8% to 21.4%.** The five highest are all in the northeast (AL, MA, SE, PI, CE). Rio de Janeiro has a 12.1% late rate and 23% of all late orders, while São Paulo has 4.5%.
 
 Money values are in Brazilian reais (R$). "Money at risk" is the value of the orders, not proven lost revenue.
 
