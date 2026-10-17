@@ -125,7 +125,39 @@ select
 from at_risk a, total_delivered t;
 
 
--- try these yourself next (you will need to explain them in interviews):
--- a. which product categories have the most late orders? (order_items -> products -> category_translation)
--- b. which customer states have the highest late percent? (orders -> customers)
--- c. which sellers have the most late orders?
+-- 7. late percent by customer state
+-- we skip states with fewer than 100 delivered orders, because their percent is not reliable
+select
+    customer_state,
+    count(*) as delivered_orders,
+    sum(case when date(order_delivered_customer_date) > date(order_estimated_delivery_date) then 1 else 0 end) as late_orders,
+    round(100.0 * sum(case when date(order_delivered_customer_date) > date(order_estimated_delivery_date) then 1 else 0 end) / count(*), 1) as late_percent
+from orders o
+join customers c on o.customer_id = c.customer_id
+where order_status = 'delivered'
+  and order_delivered_customer_date is not null
+group by customer_state
+having count(*) >= 100
+order by late_percent desc;
+
+
+-- 8. late percent by product category
+-- count(distinct order_id) counts each order once per category
+-- left join keeps products whose category has no English name (coalesce falls back to another name)
+select
+    coalesce(t.product_category_name_english, p.product_category_name, 'unknown') as category,
+    count(distinct o.order_id) as delivered_orders,
+    count(distinct case when date(o.order_delivered_customer_date) > date(o.order_estimated_delivery_date) then o.order_id end) as late_orders,
+    round(100.0 * count(distinct case when date(o.order_delivered_customer_date) > date(o.order_estimated_delivery_date) then o.order_id end) / count(distinct o.order_id), 1) as late_percent
+from orders o
+join order_items i on o.order_id = i.order_id
+join products p on i.product_id = p.product_id
+left join category_translation t on p.product_category_name = t.product_category_name
+where o.order_status = 'delivered'
+  and o.order_delivered_customer_date is not null
+group by category
+having count(distinct o.order_id) >= 100
+order by late_percent desc;
+
+
+-- optional next: which sellers have the most late orders? (orders -> order_items -> sellers)
